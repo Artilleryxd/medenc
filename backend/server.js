@@ -1,16 +1,38 @@
-import ipfs from './config/ipfs.js';
-import all from 'it-all';
+// backend/server.js
+const express = require('express');
+const cors = require('cors');
+const fileRoutes = require('./routes/fileRoutes');
 
-async function testIPFS() {
-  try {
-    const { cid } = await ipfs.add('Hello from IPFS 👋');
-    console.log('✅ File added successfully: ', cid.toString());
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-    const data = Buffer.concat(await all(ipfs.cat(cid)));
-    console.log('📦 Fetched content:', data.toString());
-  } catch (error) {
-    console.error('❌ IPFS error:', error);
-  }
-}
+// Middleware
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-testIPFS();
+// Routes
+app.use('/api', fileRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    error: err.message || 'Internal server error' 
+  });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+  console.log(`📡 IPFS should be running on http://localhost:5001`);
+  console.log(`⛓️  Hardhat network should be running on http://localhost:8545`);
+});
+
+module.exports = app;
+
