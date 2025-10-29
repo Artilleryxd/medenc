@@ -19,11 +19,8 @@ async function main() {
   console.log("✅ ImageRegistry deployed successfully!");
   console.log(`📍 Contract address: ${address}`);
   console.log(`🔗 Network: ${hre.network.name}`);
-  console.log("\n⚠️  Update the contract address in routes/fileRoutes.js\n");
-
-  // Verify deployment
-  const imageCount = await registry.getImageCount();
-  console.log(`📊 Initial image count: ${imageCount}`);
+  console.log("\n⚠️  Update the contract address in routes/fileRoutes.js to:");
+  console.log(`    ${address}\n`);
 }
 
 main()

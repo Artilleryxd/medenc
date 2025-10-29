@@ -38,40 +38,18 @@ export default function UploadPage() {
     setError(null);
 
     try {
-      // Create FormData for multiple file upload
       const formData = new FormData();
-      selectedFiles.forEach((file) => {
-        formData.append('images', file);
-      });
+      selectedFiles.forEach((file) => formData.append('images', file));
 
-      console.log(`Uploading ${selectedFiles.length} file(s)...`);
-
-      // Upload to backend
       const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          console.log(`Upload progress: ${percentCompleted}%`);
-        },
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      console.log('Upload successful:', response.data);
-
-      // Add uploaded images to state
       setUploadedImages([...uploadedImages, ...response.data.files]);
-      
-      // Clear selected files
       setSelectedFiles([]);
-      
-      // Show success message
       alert(`✅ Successfully uploaded ${response.data.files.length} image(s)!`);
       
     } catch (err) {
-      console.error('Upload error:', err);
       setError(err.response?.data?.message || err.message || 'Upload failed');
     } finally {
       setUploading(false);

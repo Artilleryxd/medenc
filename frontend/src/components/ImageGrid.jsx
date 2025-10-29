@@ -1,4 +1,3 @@
-// frontend/src/components/ImageGrid.jsx
 import React, { useState } from 'react';
 
 export default function ImageGrid({ images }) {
@@ -10,25 +9,20 @@ export default function ImageGrid({ images }) {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const CopyButton = ({ text, index, field, label }) => {
-    const isCopied = copiedIndex === `${index}-${field}`;
-    
-    return (
-      <button
-        onClick={() => copyToClipboard(text, index, field)}
-        className="ml-2 text-blue-600 hover:text-blue-800 text-xs"
-        title={`Copy ${label}`}
-      >
-        {isCopied ? '✓ Copied!' : '📋 Copy'}
-      </button>
-    );
-  };
+  const CopyButton = ({ text, index, field, label }) => (
+    <button
+      onClick={() => copyToClipboard(text, index, field)}
+      className="ml-2 text-blue-600 hover:text-blue-800 text-xs"
+      title={`Copy ${label}`}
+    >
+      {copiedIndex === `${index}-${field}` ? '✓ Copied!' : '📋 Copy'}
+    </button>
+  );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {images.map((img, index) => (
         <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-          {/* Image Preview Placeholder */}
           <div className="bg-gradient-to-br from-blue-100 to-purple-100 h-48 flex items-center justify-center">
             <div className="text-center">
               <svg className="w-16 h-16 mx-auto text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,73 +32,48 @@ export default function ImageGrid({ images }) {
             </div>
           </div>
 
-          {/* Image Info */}
           <div className="p-4 space-y-3">
-            {/* Original Name */}
             <div>
-              <p className="text-sm font-semibold text-gray-700">
-                📄 {img.originalName}
-              </p>
-              <p className="text-xs text-gray-500">
-                Size: {(img.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+              <p className="text-sm font-semibold text-gray-700">📄 {img.originalName}</p>
+              <p className="text-xs text-gray-500">Size: {(img.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
 
-            {/* Image ID */}
             <div className="bg-gray-50 p-2 rounded">
               <p className="text-xs text-gray-600 font-semibold mb-1">Image ID:</p>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-mono text-gray-800 break-all">
-                  {img.imageID}
-                </p>
+                <p className="text-sm font-mono text-gray-800 break-all">{img.imageID}</p>
                 <CopyButton text={img.imageID} index={index} field="id" label="Image ID" />
               </div>
             </div>
 
-            {/* IPFS CID */}
             <div className="bg-gray-50 p-2 rounded">
               <p className="text-xs text-gray-600 font-semibold mb-1">IPFS CID:</p>
               <div className="flex items-center justify-between">
-                <p className="text-xs font-mono text-gray-800 break-all">
-                  {img.cid.substring(0, 30)}...
-                </p>
+                <p className="text-xs font-mono text-gray-800 break-all">{img.cid.substring(0, 30)}...</p>
                 <CopyButton text={img.cid} index={index} field="cid" label="CID" />
               </div>
             </div>
 
-            {/* Encrypted AES Key */}
             <div className="bg-gray-50 p-2 rounded">
               <p className="text-xs text-gray-600 font-semibold mb-1">Encrypted AES Key:</p>
               <div className="flex items-center justify-between">
-                <p className="text-xs font-mono text-gray-800 break-all">
-                  {img.encryptedAESKey.substring(0, 30)}...
-                </p>
+                <p className="text-xs font-mono text-gray-800 break-all">{img.encryptedAESKey.substring(0, 30)}...</p>
                 <CopyButton text={img.encryptedAESKey} index={index} field="key" label="AES Key" />
               </div>
             </div>
 
-            {/* Status Badge */}
-            <div className="pt-2 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Uploaded
-                </span>
-                <span className="text-xs text-gray-500">
-                  🔐 AES + RSA
-                </span>
-              </div>
+            <div className="pt-2 border-t flex items-center justify-between">
+              <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                Uploaded
+              </span>
+              <span className="text-xs text-gray-500">🔐 Unique Key</span>
             </div>
 
-            {/* Transaction Hash (if available) */}
             {img.transactionHash && (
-              <div className="pt-2">
-                <p className="text-xs text-gray-500">
-                  TX: {img.transactionHash.substring(0, 15)}...
-                </p>
-              </div>
+              <p className="text-xs text-gray-500">TX: {img.transactionHash.substring(0, 15)}...</p>
             )}
           </div>
         </div>

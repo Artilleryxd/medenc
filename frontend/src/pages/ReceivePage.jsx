@@ -21,20 +21,14 @@ export default function ReceivePage() {
     setError('');
     
     try {
-      console.log('📋 Fetching all images from blockchain...');
       const res = await axios.get(`${API_BASE_URL}/all-images`);
       
       if (res.data.success) {
-        console.log(`✅ Found ${res.data.count} images`);
         setImages(res.data.images);
-        
-        if (res.data.count === 0) {
-          setError('No images found. Upload some images first!');
-        }
+        if (res.data.count === 0) setError('No images found. Upload some images first!');
       }
     } catch (err) {
-      console.error('Failed to fetch images:', err);
-      setError('Failed to fetch images from blockchain: ' + (err.response?.data?.message || err.message));
+      setError('Failed to fetch images: ' + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -42,31 +36,17 @@ export default function ReceivePage() {
 
   const handleDecryptImage = async (image) => {
     const imageID = image.imageID;
-    
-    // Mark this image as decrypting
     setDecryptingIds(prev => new Set(prev).add(imageID));
     setError('');
     
     try {
-      console.log(`🔓 Decrypting image ${imageID}...`);
-      
-      // Call simplified endpoint that gets image by ID and CID
       const res = await axios.get(`${API_BASE_URL}/get-image/${imageID}/${image.cid}`, {
         responseType: 'blob',
       });
       
-      // Create object URL from the blob
-      const imageUrl = URL.createObjectURL(res.data);
-      
-      setDecryptedImages(prev => ({
-        ...prev,
-        [imageID]: imageUrl
-      }));
-      
-      console.log(`✅ Image ${imageID} decrypted successfully`);
+      setDecryptedImages(prev => ({ ...prev, [imageID]: URL.createObjectURL(res.data) }));
       
     } catch (err) {
-      console.error(`Failed to decrypt image ${imageID}:`, err);
       setError(`Failed to decrypt image ${imageID}: ${err.response?.data?.error || err.message}`);
     } finally {
       setDecryptingIds(prev => {
