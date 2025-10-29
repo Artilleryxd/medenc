@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import ImageGrid from '../components/ImageGrid';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 export default function UploadPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);

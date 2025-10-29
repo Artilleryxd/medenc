@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 /**
@@ -7,13 +6,10 @@ pragma solidity ^0.8.0;
  * Provides tamper-proof storage on blockchain
  */
 contract ImageRegistry {
-    // Mapping from image ID to IPFS CID
     mapping(uint256 => string) public imageCIDs;
     
-    // Track total number of images stored
     uint256 public imageCount;
     
-    // Event emitted when a new CID is stored
     event CIDStored(
         uint256 indexed imageID,
         string cid,
@@ -29,11 +25,9 @@ contract ImageRegistry {
     function storeCID(uint256 imageID, string memory cid) public {
         require(bytes(cid).length > 0, "CID cannot be empty");
         
-        // Store CID
         imageCIDs[imageID] = cid;
         imageCount++;
         
-        // Emit event for tracking
         emit CIDStored(imageID, cid, msg.sender, block.timestamp);
     }
     

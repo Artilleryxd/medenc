@@ -8,16 +8,14 @@ const ImageRegistry = require('../artifacts/contracts/ImageRegistry.sol/ImageReg
 
 const router = express.Router();
 
-// Configure multer for memory storage (files stored in memory as Buffer)
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
-    files: 10 // Maximum 10 files at once
+    fileSize: 50 * 1024 * 1024, 
+    files: 10 
   }
 });
 
-// Blockchain setup - Hardhat local network
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
 let contract;
 let signer;
@@ -28,13 +26,12 @@ let signer;
  */
 async function initBlockchain() {
   try {
-    // Get first account from Hardhat local network
+
     signer = await provider.getSigner(0);
     
-    // Contract address (replace with your deployed contract address)
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+    const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
     
-    // Create contract instance
     contract = new ethers.Contract(
       contractAddress,
       ImageRegistry.abi,
@@ -52,7 +49,6 @@ async function initBlockchain() {
   }
 }
 
-// Initialize blockchain on module load
 initBlockchain();
 
 /**
@@ -72,29 +68,23 @@ router.post('/upload', upload.array('images', 10), async (req, res) => {
     
     const uploadResults = [];
 
-    // Process each file
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];
       
-      // Generate unique image ID using timestamp and index
       const imageID = Date.now() + i;
       
       console.log(`\n🔐 Processing: ${file.originalname} (ID: ${imageID})`);
       
-      // 1. Encrypt file using AES-256-CBC
       const encryptedFile = encryptFile(file.buffer);
       console.log(`   ✅ Encrypted: ${encryptedFile.length} bytes`);
       
-      // 2. Upload encrypted file to IPFS
       const cid = await uploadToIPFS(encryptedFile);
       console.log(`   ✅ IPFS CID: ${cid}`);
       
-      // 3. Store CID on blockchain
       const tx = await contract.storeCID(imageID, cid);
-      await tx.wait(); // Wait for transaction to be mined
+      await tx.wait(); 
       console.log(`   ✅ Blockchain: ${tx.hash}`);
       
-      // 4. Encrypt AES key with RSA public key
       const encryptedAESKey = encryptAESKey();
       console.log(`   ✅ Encrypted AES key generated`);
       
