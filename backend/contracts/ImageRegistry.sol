@@ -11,6 +11,7 @@ contract ImageRegistry {
     }
     
     mapping(uint256 => ImageData) public images;
+    
     uint256 public imageCount;
     
     event CIDStored(

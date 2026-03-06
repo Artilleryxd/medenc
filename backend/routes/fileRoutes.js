@@ -52,18 +52,14 @@ router.post('/upload', upload.array('images', 10), async (req, res) => {
       
       console.log(`🔐 ${file.originalname} (ID: ${imageID})`);
       
-      // Encrypt with unique key
       const { encryptedData, key, iv } = encryptFile(file.buffer);
       console.log(`   ✅ Encrypted: ${encryptedData.length} bytes`);
       
-      // Upload to IPFS
       const cid = await uploadToIPFS(encryptedData);
       console.log(`   ✅ IPFS: ${cid}`);
       
-      // Encrypt the AES key+IV with RSA
       const encryptedKey = encryptAESKey(key, iv);
       
-      // Store on blockchain
       const tx = await contract.storeCID(imageID, cid, encryptedKey);
       await tx.wait();
       console.log(`   ✅ Blockchain: ${tx.hash}`);
